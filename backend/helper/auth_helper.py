@@ -1,6 +1,6 @@
-import hmac
-import hashlib
 import base64
+import hashlib
+import hmac
 
 
 def get_secret_hash(username: str, client_id: str, client_secret: str):

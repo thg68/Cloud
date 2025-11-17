@@ -1,16 +1,16 @@
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Response
-from sqlalchemy.orm import Session
 import boto3
+from db.db import get_db
+from db.middleware.auth_middleware import get_current_user
+from db.models.user import User
+from helper.auth_helper import get_secret_hash
 from pydantic_models.auth_models import (
-    SignupRequest,
-    LoginRequest,
     ConfirmSignupRequest,
+    LoginRequest,
+    SignupRequest,
 )
 from secret_keys import SecretKeys
-from helper.auth_helper import get_secret_hash
-from db.db import get_db
-from db.models.user import User
-
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 secret_keys = SecretKeys()
@@ -18,11 +18,17 @@ secret_keys = SecretKeys()
 COGNITO_CLIENT_ID = secret_keys.COGNITO_CLIENT_ID
 COGNITO_CLIENT_SECRET = secret_keys.COGNITO_CLIENT_SECRET
 
-cognito_client = boto3.client("cognito-idp", region_name=secret_keys.REGION_NAME)
+cognito_client = boto3.client(
+    "cognito-idp",
+    region_name=secret_keys.REGION_NAME,
+)
 
 
 @router.post("/signup")
-def signup_user(data: SignupRequest, db: Session = Depends(get_db)):
+def signup_user(
+    data: SignupRequest,
+    db: Session = Depends(get_db),
+):
     try:
         secret_hash = get_secret_hash(
             data.email,
@@ -124,3 +130,50 @@ def confirm_signup(data: ConfirmSignupRequest):
         return {"message": "User confirmed successfully!"}
     except Exception as e:
         raise HTTPException(400, f"Cognito sugnup exception: {e}")
+
+
+@router.post("/refresh")
+def refresh_token(
+    refresh_token: str = Cookie(None),
+    user_cognito_sub: str = Cookie(None),
+    response: Response = None,
+):
+    try:
+        if not refresh_token or not user_cognito_sub:
+            raise HTTPException(400, "cookies cannot be null!")
+        secret_hash = get_secret_hash(
+            user_cognito_sub,
+            COGNITO_CLIENT_ID,
+            COGNITO_CLIENT_SECRET,
+        )
+
+        cognito_response = cognito_client.initiate_auth(
+            ClientId=COGNITO_CLIENT_ID,
+            AuthFlow="REFRESH_TOKEN_AUTH",
+            AuthParameters={
+                "REFRESH_TOKEN": refresh_token,
+                "SECRET_HASH": secret_hash,
+            },
+        )
+        auth_result = cognito_response.get("AuthenticationResult")
+
+        if not auth_result:
+            raise HTTPException(400, "Incorrect cognito response")
+
+        access_token = auth_result.get("AccessToken")
+
+        response.set_cookie(
+            key="access_token",
+            value=access_token,
+            httponly=True,
+            secure=True,
+        )
+
+        return {"message": "Access token refreshed!"}
+    except Exception as e:
+        raise HTTPException(400, f"Cognito sugnup exception: {e}")
+
+
+@router.get("/me")
+def protected_route(user=Depends(get_current_user)):
+    return {"message": "You are authenticated!", "user": user}
