@@ -43,9 +43,9 @@ def poll_sqs():
                 s3_key = s3_record["object"]["key"]
 
                 response = ecs_client.run_task(
-                    cluster="arn:aws:ecs:ap-south-1:605134446036:cluster/Rivaan-TranscoderCluster",
+                    cluster="arn:aws:ecs:ap-southeast-2:419698484713:cluster/uet-TranscoderCluster",
                     launchType="FARGATE",
-                    taskDefinition="arn:aws:ecs:ap-south-1:605134446036:task-definition/video-transcoder:2",
+                    taskDefinition="arn:aws:ecs:ap-southeast-2:419698484713:task-definition/video-transcoder:1",
                     overrides={
                         "containerOverrides": [
                             {
@@ -60,12 +60,12 @@ def poll_sqs():
                     networkConfiguration={
                         "awsvpcConfiguration": {
                             "subnets": [
-                                "subnet-0c1cf3385363a7d66",
-                                "subnet-02bdfb9f47bd9b9a6",
-                                "subnet-0cacf7adeb5e67b96",
+                                "subnet-0833fd5c7d87f8833",
+                                "subnet-0879f3fb50cfdb01b",
+                                "subnet-0f319d02a03368e95",
                             ],
                             "assignPublicIp": "ENABLED",
-                            "securityGroups": ["sg-0279fe5646343ea75"],
+                            "securityGroups": ["sg-0a06db12a367963f2"],
                         }
                     },
                 )
