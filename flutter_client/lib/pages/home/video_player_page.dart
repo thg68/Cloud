@@ -31,10 +31,16 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
         ),
       ),
       betterPlayerDataSource: BetterPlayerDataSource.network(
-        "https://d3iiasefxo4uf9.cloudfront.net/${widget.video['video_s3_key']}/manifest.mpd",
+        "https://processed-videos-uet.s3.ap-southeast-2.amazonaws.com/videos/${widget.video['video_s3_key']}/manifest.mpd",
         videoFormat: BetterPlayerVideoFormat.dash,
       ),
     );
+    final videoUrl =
+        "https://processed-videos-uet.s3.ap-southeast-2.amazonaws.com/${widget.video['video_s3_key']}/manifest.mpd";
+
+    print('=== Video Debug Info ===');
+    print('Video URL: $videoUrl');
+    print('========================');
   }
 
   @override

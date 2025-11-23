@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class AuthService {
-  final backendUrl = "http://35.23.52.233:8000/auth";
+  final backendUrl = "http://localhost:8000/auth";
   final FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
   Future<Map<String, String>> _getCookieHeader() async {

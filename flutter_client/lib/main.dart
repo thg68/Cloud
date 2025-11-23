@@ -5,6 +5,7 @@ import 'package:flutter_client/cubits/upload_video/upload_video_cubit.dart';
 import 'package:flutter_client/pages/auth/signup_page.dart';
 import 'package:flutter_client/pages/home/home_page.dart';
 
+
 void main() {
   runApp(
     MultiBlocProvider(

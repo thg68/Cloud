@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 class VideoService {
   final FlutterSecureStorage secureStorage = FlutterSecureStorage();
-  String backendUrl = "http://35.23.52.233:8000/videos";
+  String backendUrl = "http://localhost:8000/videos";
 
   Future<Map<String, String>> _getCookieHeader() async {
     final accessToken = await secureStorage.read(key: 'access_token');

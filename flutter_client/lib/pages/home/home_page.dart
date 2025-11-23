@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
             itemBuilder: (context, index) {
               final video = videos[index];
               final thumbnail =
-                  "https://d1unjxa15f7twa.cloudfront.net/${video['video_s3_key'].replaceAll('.mp4', "").replaceAll("videos/", "thumbnails/")}";
+                  "https://video-thumbnails-uet.s3.ap-southeast-2.amazonaws.com/${video['video_s3_key'].replaceAll('.mp4', "").replaceAll("videos/", "thumbnails/")}";
 
               return GestureDetector(
                 onTap: () {
